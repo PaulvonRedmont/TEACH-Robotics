@@ -56,12 +56,22 @@ motor_right = servo.ContinuousServo(
 )
 
 
-motor_task = servo.ContinuousServo(
+#Motor arm stuff
+#raise arm, extend it
+motor_task_raise_arm = servo.ContinuousServo(
+    pwmio.PWMOut(gizmo.MOTOR_4, frequency=pwm_freq),
+    min_pulse=min_pulse,
+    max_pulse=max_pulse
+)
+motor_task_arm_extension_retraction = servo.ContinuousServo(
     pwmio.PWMOut(gizmo.MOTOR_4, frequency=pwm_freq),
     min_pulse=min_pulse,
     max_pulse=max_pulse
 )
 
+#Servos, which has:
+#Habitat Modules thingy
+#Claw open and close
 #Servo on the back of the robot for dropping habitat modules thingy
 servo_task_habitat_modules_dropper = servo.Servo(
     pwmio.PWMOut(gizmo.SERVO_1, frequency=pwm_freq),
@@ -69,6 +79,14 @@ servo_task_habitat_modules_dropper = servo.Servo(
     min_pulse=min_pulse,
     max_pulse=max_pulse
 )
+
+servo_task_claw_open_and_close = servo.Servo(
+    pwmio.PWMOut(gizmo.SERVO_1, frequency=pwm_freq),
+    actuation_range=servo_range,
+    min_pulse=min_pulse,
+    max_pulse=max_pulse
+)
+
 
 # Configure the built-in LED pin as an output
 builtin_led = digitalio.DigitalInOut(board.GP25)
