@@ -107,19 +107,14 @@ prev_back_button = False
 # Keep running forever
 while True:
     loop_start_time = time.monotonic()  # Start timing the loop
-
     builtin_led.value = not builtin_led.value
-
     refresh_start_time = time.monotonic()  # Start timing refresh
     gizmo.refresh()
     refresh_elapsed = time.monotonic() - refresh_start_time
-
     if gizmo.buttons.start and not prev_start_button:
         mode = ARCADE_MODE if mode == TANK_MODE else TANK_MODE
     prev_start_button = gizmo.buttons.start
-
     control_start_time = time.monotonic()  # Start timing control logic
-
     if mode == TANK_MODE:
         motor_left.throttle = map_range(gizmo.axes.left_y, 0, 255, -1.0, 1.0)
         motor_right.throttle = map_range(gizmo.axes.right_y, 0, 255, -1.0, 1.0)
