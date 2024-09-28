@@ -76,6 +76,7 @@ builtin_led.direction = digitalio.Direction.OUTPUT
 
 TANK_MODE = 0
 ARCADE_MODE = 1
+PAWL_MODE = 2
 
 mode = TANK_MODE
 
