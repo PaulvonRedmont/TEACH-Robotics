@@ -74,13 +74,17 @@ servo_task_habitat_modules_dropper = servo.Servo(
 builtin_led = digitalio.DigitalInOut(board.GP25)
 builtin_led.direction = digitalio.Direction.OUTPUT
 
+
+#Modes stuff
 TANK_MODE = 0
 ARCADE_MODE = 1
 PAWL_MODE = 2
-
+#starting mode
 mode = TANK_MODE
-
+#start button pressed/not pressed
 prev_start_button = False
+#back button pressed (perhaps to switch to Pawl mode?)
+prev_back_button = False
 
 # Keep running forever
 while True:
