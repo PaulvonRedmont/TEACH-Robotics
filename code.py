@@ -33,32 +33,37 @@ from adafruit_motor import servo
 from adafruit_simplemath import map_range, constrain
 from circuitpython_gizmo import Gizmo
 
-# the Gizmo object provides access to the data that is held by the field
-# management system and the gizmo system processor
 gizmo = Gizmo()
 
 pwm_freq = 50 # Hertz
 min_pulse = 1000 # milliseconds
 max_pulse = 2000 # milliseconds
-servo_range = 90  # degrees
+servo_range = 180  # degrees
 
 # Configure the motors & servos for the ports they are connected to
+
 motor_left = servo.ContinuousServo(
+# Left Motor
     pwmio.PWMOut(gizmo.MOTOR_1, frequency=pwm_freq),
     min_pulse=min_pulse,
     max_pulse=max_pulse
 )
 motor_right = servo.ContinuousServo(
+# Right Motor
     pwmio.PWMOut(gizmo.MOTOR_3, frequency=pwm_freq),
     min_pulse=min_pulse,
     max_pulse=max_pulse
 )
+
+
 motor_task = servo.ContinuousServo(
     pwmio.PWMOut(gizmo.MOTOR_4, frequency=pwm_freq),
     min_pulse=min_pulse,
     max_pulse=max_pulse
 )
-servo_task = servo.Servo(
+
+#Servo on the back of the robot for dropping habitat modules thingy
+servo_task_habitat_modules_dropper = servo.Servo(
     pwmio.PWMOut(gizmo.SERVO_1, frequency=pwm_freq),
     actuation_range=servo_range,
     min_pulse=min_pulse,
@@ -109,11 +114,11 @@ while True:
         motor_task.throttle = 0.0
 
     if gizmo.buttons.left_trigger:
-        servo_task.angle = 0
+        servo_task_habitat_modules_dropper.angle = 0
     elif gizmo.buttons.left_shoulder:
-        servo_task.angle = 90
+        servo_task_habitat_modules_dropper.angle = 90
     else:
-        servo_task.angle = 45
+        servo_task_habitat_modules_dropper.angle = 45
 
     control_elapsed = time.monotonic() - control_start_time
     loop_elapsed = time.monotonic() - loop_start_time
