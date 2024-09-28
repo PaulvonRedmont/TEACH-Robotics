@@ -1,7 +1,3 @@
-"""
-This example shows how to control two drive motors with the gamepad.
-"""
-
 import board
 import time
 import pwmio
