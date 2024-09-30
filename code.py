@@ -1,11 +1,12 @@
 """
-This is the default BEST Robotics program for the Gizmo.
-This program offers remote control of simple robots using 3 motors and a servo.
-This may serve as a useful starting point for your team's competition code. You
-will almost certainly need to edit or extend this code to meet your needs.
+This is the main controller program for our robot developed by TEACH Robotics 2024
+All of this code was written by Paul Estrada (Programming)
 
-This code has two control modes: 'Tank Mode' and 'Arcade Mode'. The Start
-button on your gamepad switches the robot between the two modes.
+This code has three control modes: 'Tank Mode' and 'Arcade Mode'. The Start
+button on the gamepad switches the robot between the two modes, and the Back 
+button switches the robot to 'Pawl Mode'. The robot will start in 'Tank Mode'.
+
+
 
 Here are the controls for Tank Mode:
 Left Joystick Up/Down    - Motor 1 Fwd/Rev
@@ -19,14 +20,14 @@ Here are the controls for Pawl Mode:
 Right Joystick Up/Down    - Both motors Fwd/Rev
 Left Joystick Left/Right  - Turn Left/Right
 
+
+
 These controls work in both modes:
 Right Trigger            - Motor 4 Forward
 Right Shoulder Button    - Motor 4 Reverse
 Left Trigger             - Servo 1 to 0 degrees
 Left Shoulder Button     - Servo 1 to 90 degrees
 
-When neither the left trigger nor shoulder button are pressed, the servo will
-go to 45 degrees.
 """
 
 import board
