@@ -15,6 +15,10 @@ Here are the controls for Arcade Mode:
 Left Joystick Up/Down    - Robot Fwd/Rev
 Left Joystick Left/Right - Robot Turn Left/Right
 
+Here are the controls for Pawl Mode:
+Right Joystick Up/Down    - Both motors Fwd/Rev
+Left Joystick Left/Right  - Turn Left/Right
+
 These controls work in both modes:
 Right Trigger            - Motor 4 Forward
 Right Shoulder Button    - Motor 4 Reverse
@@ -113,16 +117,43 @@ while True:
     refresh_elapsed = time.monotonic() - refresh_start_time
     if gizmo.buttons.start and not prev_start_button:
         mode = ARCADE_MODE if mode == TANK_MODE else TANK_MODE
+    if gizmo.buttons.back and not prev_back_button:
+        mode = PAWL_MODE if mode == TANK_MODE else TANK_MODE 
+    #pawl mode switch trigger 
     prev_start_button = gizmo.buttons.start
     control_start_time = time.monotonic()  # Start timing control logic
     if mode == TANK_MODE:
         motor_left.throttle = map_range(gizmo.axes.left_y, 0, 255, -1.0, 1.0)
         motor_right.throttle = map_range(gizmo.axes.right_y, 0, 255, -1.0, 1.0)
+
     elif mode == ARCADE_MODE:
         speed = map_range(gizmo.axes.left_y, 0, 255, -1.0, 1.0)
         steering = map_range(gizmo.axes.left_x, 0, 255, -1.0, 1.0)
         motor_left.throttle = constrain(speed - steering, -1.0, 1.0)
         motor_right.throttle = constrain(speed + steering, -1.0, 1.0)
+    
+    elif mode == PAWL_MODE:
+        #left joystick controls both motors to go forward/backwards
+        speed = map_range(gizmo.axes.left_y, 0, 255, -1.0, 1.0)
+        #right joystick horizontal axis controls the turning (basically slows down one motor to half speed while continuing the other motor at full speed)
+        turn = map_range(gizmo.axes.right_x, 0, 255, -1.0, 1.0)
+
+        # Calculate the throttle for each motor
+        if turn > 0:  # Turning right
+            motor_left.throttle = speed
+            motor_right.throttle = speed * (1 - turn / 2)  # Slow down the right motor
+        elif turn < 0:  # Turning left
+            motor_left.throttle = speed * (1 + turn / 2)  # Slow down the left motor
+            motor_right.throttle = speed
+        else:  # No turning
+            motor_left.throttle = speed
+            motor_right.throttle = speed
+        #A wee little side note here: I'm unable to find the technical term for this sort of controller layout, so I'm just going to call it "Pawl Mode" for now.
+        #Was initially thinking of calling it "Better/Modern Arcade" because when I first heard of the term "Arcade Mode" 
+        #I thought it was going to be like this (like regular video games, I thought), but it wasn't :(
+        #But this controller layout is basically the same as popular games such a Fortnite, Minecraft, and Roblox, so it's a pretty modern controller layout and is the standard in at least the shooter game industry
+
+
 
     if gizmo.buttons.right_trigger:
         motor_task.throttle = 1.0
