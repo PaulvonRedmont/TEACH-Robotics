@@ -86,7 +86,7 @@ servo_task_habitat_modules_dropper = servo.Servo(
 )
 
 servo_task_claw_open_and_close = servo.Servo(
-    pwmio.PWMOut(gizmo.SERVO_1, frequency=pwm_freq),
+    pwmio.PWMOut(gizmo.SERVO_2, frequency=pwm_freq),
     actuation_range=servo_range,
     min_pulse=min_pulse,
     max_pulse=max_pulse
