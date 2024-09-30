@@ -109,7 +109,7 @@ prev_start_button = False
 #back button pressed (perhaps to switch to Pawl mode?)
 prev_back_button = False
 
-#keep running forever and refresh and check the contoller inputs
+#keep running forever and refresh and check the controller inputs
 while True:
     last_printed_mode = "Tank Mode"
     builtin_led.value = not builtin_led.value
