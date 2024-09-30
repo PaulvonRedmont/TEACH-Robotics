@@ -46,15 +46,14 @@ max_pulse = 2000 # milliseconds
 servo_range = 180  # degrees
 
 # Configure the motors & servos for the ports they are connected to
-
-motor_left = servo.ContinuousServo(
 # Left Motor
+motor_left = servo.ContinuousServo(
     pwmio.PWMOut(gizmo.MOTOR_1, frequency=pwm_freq),
     min_pulse=min_pulse,
     max_pulse=max_pulse
 )
-motor_right = servo.ContinuousServo(
 # Right Motor
+motor_right = servo.ContinuousServo(
     pwmio.PWMOut(gizmo.MOTOR_3, frequency=pwm_freq),
     min_pulse=min_pulse,
     max_pulse=max_pulse
@@ -62,12 +61,13 @@ motor_right = servo.ContinuousServo(
 
 
 #Motor arm stuff
-#raise arm, extend it
+#raise arm
 motor_task_raise_arm = servo.ContinuousServo(
     pwmio.PWMOut(gizmo.MOTOR_4, frequency=pwm_freq),
     min_pulse=min_pulse,
     max_pulse=max_pulse
 )
+#extend/retract arm
 motor_task_arm_extension_retraction = servo.ContinuousServo(
     pwmio.PWMOut(gizmo.MOTOR_4, frequency=pwm_freq),
     min_pulse=min_pulse,
@@ -109,20 +109,20 @@ prev_start_button = False
 #back button pressed (perhaps to switch to Pawl mode?)
 prev_back_button = False
 
-# Keep running forever
+#keep running forever and refresh and check the contoller inputs
 while True:
-    loop_start_time = time.monotonic()  # Start timing the loop
+
     builtin_led.value = not builtin_led.value
-    refresh_start_time = time.monotonic()  # Start timing refresh
+
     gizmo.refresh()
-    refresh_elapsed = time.monotonic() - refresh_start_time
+
     if gizmo.buttons.start and not prev_start_button:
         mode = ARCADE_MODE if mode == TANK_MODE else TANK_MODE
     if gizmo.buttons.back and not prev_back_button:
         mode = PAWL_MODE if mode == TANK_MODE else TANK_MODE 
     #pawl mode switch trigger 
     prev_start_button = gizmo.buttons.start
-    control_start_time = time.monotonic()  # Start timing control logic
+
     if mode == TANK_MODE:
         motor_left.throttle = map_range(gizmo.axes.left_y, 0, 255, -1.0, 1.0)
         motor_right.throttle = map_range(gizmo.axes.right_y, 0, 255, -1.0, 1.0)
@@ -151,27 +151,35 @@ while True:
             motor_right.throttle = speed
         #A wee little side note here: I'm unable to find the technical term for this sort of controller layout, so I'm just going to call it "Pawl Mode" for now.
         #Was initially thinking of calling it "Better/Modern Arcade" because when I first heard of the term "Arcade Mode" 
-        #I thought it was going to be like this (like regular video games, I thought), but it wasn't :(
-        #But this controller layout is basically the same as popular games such a Fortnite, Minecraft, and Roblox, so it's a pretty modern controller layout and is the standard in at least the shooter game industry
+        #I thought it was going to be like this (like regular video games), but it wasn't :(
+        #But this controller layout is basically the same as popular games such a Fortnite, Minecraft, and Roblox, so it's a pretty modern controller layout and the standard in at least the shooter game industry
 
-    if gizmo.servo_task_habitat_modules_dropper:
-        motor_task_raise_arm.throttle = 1.0
-    elif gizmo.servo_task_habitat_modules_dropper:
-        motor_task_raise_arm.throttle = -1.0
 
+
+    #Raise and lower arm motor
+    if gizmo.buttons.left_trigger:
+        motor_task_raise_arm.motor.throttle = 1.0
+    elif gizmo.buttons.left_shoulder:
+        motor_task_raise_arm.motor.throttle = -1.0
+    #arm extension and retration motor
+    if gizmo.buttons.y:
+        motor_task_arm_extension_retraction.motor.throttle = 1.0
+    elif gizmo.buttons.y:
+        motor_task_arm_extension_retraction.motor.throttle = -1.0
+
+
+
+
+    #SERVOS CODE
+    #Claw open and close servo
+    if gizmo.buttons.y:
+        servo_task_claw_open_and_close.angle = 90
+    elif gizmo.buttons.y:
+        servo_task_claw_open_and_close.angle = 0
     #Habitat modules dropper servo
     if gizmo.buttons.right_trigger:
         servo_task_habitat_modules_dropper.angle = 90
     elif gizmo.buttons.right_shoulder:
         servo_task_habitat_modules_dropper.angle = 0
 
-    #Claw open and close servo
-    if gizmo.buttons.y:
-        servo_task_claw_open_and_close.angle = 90
-    elif gizmo.buttons.y:
-        servo_task_claw_open_and_close.angle = 0
-
-    control_elapsed = time.monotonic() - control_start_time
-    loop_elapsed = time.monotonic() - loop_start_time
-
-    print(f"Refresh Time: {refresh_elapsed:.6f}s, Control Time: {control_elapsed:.6f}s, Total Loop Time: {loop_elapsed:.6f}s")
+    time.sleep(0.001)  #tiny delay to make sure we dont crash the gizmo board and overheat it and leave another set of fingerprints on the melted plastic case
