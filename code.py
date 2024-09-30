@@ -2,8 +2,8 @@
 This is the main controller program for our robot developed by TEACH Robotics 2024
 All of this code was written by Paul Estrada (Programming)
 
-This code has three control modes: 'Tank Mode' and 'Arcade Mode'. The Start
-button on the gamepad switches the robot between the two modes, and the Back 
+This code has three control modes: 'Tank Mode', 'Arcade Mode', and 'Pawl Mode'. The Start
+button on the gamepad switches the robot between the first two modes, and the Back 
 button switches the robot to 'Pawl Mode'. The robot will start in 'Tank Mode'.
 
 
