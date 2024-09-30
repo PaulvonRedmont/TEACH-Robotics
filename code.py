@@ -153,21 +153,22 @@ while True:
         #I thought it was going to be like this (like regular video games, I thought), but it wasn't :(
         #But this controller layout is basically the same as popular games such a Fortnite, Minecraft, and Roblox, so it's a pretty modern controller layout and is the standard in at least the shooter game industry
 
+    if gizmo.servo_task_habitat_modules_dropper:
+        motor_task_raise_arm.throttle = 1.0
+    elif gizmo.servo_task_habitat_modules_dropper:
+        motor_task_raise_arm.throttle = -1.0
 
-
+    #Habitat modules dropper servo
     if gizmo.buttons.right_trigger:
-        motor_task.throttle = 1.0
-    elif gizmo.buttons.right_shoulder:
-        motor_task.throttle = -1.0
-    else:
-        motor_task.throttle = 0.0
-
-    if gizmo.buttons.left_trigger:
-        servo_task_habitat_modules_dropper.angle = 0
-    elif gizmo.buttons.left_shoulder:
         servo_task_habitat_modules_dropper.angle = 90
-    else:
-        servo_task_habitat_modules_dropper.angle = 45
+    elif gizmo.buttons.right_shoulder:
+        servo_task_habitat_modules_dropper.angle = 0
+
+    #Claw open and close servo
+    if gizmo.buttons.y:
+        servo_task_claw_open_and_close.angle = 90
+    elif gizmo.buttons.y:
+        servo_task_claw_open_and_close.angle = 0
 
     control_elapsed = time.monotonic() - control_start_time
     loop_elapsed = time.monotonic() - loop_start_time
