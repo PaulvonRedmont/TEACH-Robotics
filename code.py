@@ -124,19 +124,19 @@ while True:
     prev_start_button = gizmo.buttons.start
 
     if mode == TANK_MODE:
-        print("Now in tank mode")
+        print("\rNow in tank mode", end="")
         motor_left.throttle = map_range(gizmo.axes.left_y, 0, 255, -1.0, 1.0)
         motor_right.throttle = map_range(gizmo.axes.right_y, 0, 255, -1.0, 1.0)
 
     elif mode == ARCADE_MODE:
-        print("Now in arcade mode")
+        print("\rNow in arcade mode", end="")
         speed = map_range(gizmo.axes.left_y, 0, 255, -1.0, 1.0)
         steering = map_range(gizmo.axes.left_x, 0, 255, -1.0, 1.0)
         motor_left.throttle = constrain(speed - steering, -1.0, 1.0)
         motor_right.throttle = constrain(speed + steering, -1.0, 1.0)
     
     elif mode == PAWL_MODE:
-        print("Now in PAWL mode")
+        print("\rNow in PAWL mode", end="")
         #left joystick controls both motors to go forward/backwards
         speed = map_range(gizmo.axes.left_y, 0, 255, -1.0, 1.0)
         #right joystick horizontal axis controls the turning (basically slows down one motor to half speed while continuing the other motor at full speed)
