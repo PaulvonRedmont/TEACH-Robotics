@@ -109,6 +109,42 @@ prev_start_button = False
 #back button pressed (perhaps to switch to Pawl mode?)
 prev_back_button = False
 
+
+robot_data = {
+    "Controller Mode": "Tank Mode",
+    "Time Elapsed": 0.0,
+
+    "Motor Left Throttle": 0.0,
+    "Motor Right Throttle": 0.0,
+
+    "Speed": 0.0,
+    "Steering": 0.0,
+    "Turn": 0.0,
+
+    "Motor Task Raise Arm": 0.0,
+    "Motor Task Arm Extension Retraction": 0.0,
+    "Servo Task Habitat Modules Dropper": 0.0,
+    "Servo Task Claw Open And Close": 0.0,
+
+    "DPAD": 0.0,
+
+    "Button A": False,
+    "Button B": False,
+    "Button X": False,
+    "Button Y": False,
+
+    "Left Trigger": False,
+    "Left Shoulder": False,
+    "Right Trigger": False,
+    "Right Shoulder": False,
+    
+    "Start": False,
+    "Select": False,
+    "Mode": False,
+}
+
+
+
 #keep running forever and refresh and check the controller inputs
 while True:
     last_printed_mode = "Tank Mode"
@@ -118,40 +154,70 @@ while True:
 
     if gizmo.buttons.start and not prev_start_button:
         mode = ARCADE_MODE if mode == TANK_MODE else TANK_MODE
+        robot_data["Controller Mode"] = "Arcade Mode" if mode == ARCADE_MODE else "Tank Mode"
     if gizmo.buttons.back and not prev_back_button:
         mode = PAWL_MODE
+        robot_data["Controller Mode"] = "Pawl Mode"
     #pawl mode switch trigger 
     prev_start_button = gizmo.buttons.start
 
     if mode == TANK_MODE:
-        print("\rNow in tank mode", end="")
+        #print("\rNow in tank mode", end="")
+        robot_data["Controller Mode"] = "Tank Mode"
         motor_left.throttle = map_range(gizmo.axes.left_y, 0, 255, -1.0, 1.0)
+        robot_data["Motor Left Throttle"] = motor_left.throttle
+
+        #print(f"\rMotor Left Throttle: {motor_left.throttle}", end="")
         motor_right.throttle = map_range(gizmo.axes.right_y, 0, 255, -1.0, 1.0)
+        robot_data["Motor Right Throttle"] = motor_right.throttle
+        #print(f"\rMotor Right Throttle: {motor_right.throttle}", end="")
 
     elif mode == ARCADE_MODE:
-        print("\rNow in arcade mode", end="")
+        #print("\rNow in arcade mode", end="")
+        robot_data["Controller Mode"] = "Arcade Mode"
         speed = map_range(gizmo.axes.left_y, 0, 255, -1.0, 1.0)
+        robot_data["Speed"] = speed
+        #print(f"\rSpeed: {speed}", end="")
+
         steering = map_range(gizmo.axes.left_x, 0, 255, -1.0, 1.0)
+        robot_data["Steering"] = steering
+        #print(f"\rSteering: {steering}", end="")
+
         motor_left.throttle = constrain(speed - steering, -1.0, 1.0)
+        robot_data["Motor Left Throttle"] = motor_left.throttle
+        #print(f"\rMotor Left Throttle: {motor_left.throttle}", end="")
+
         motor_right.throttle = constrain(speed + steering, -1.0, 1.0)
+        robot_data ["Motor Right Throttle"] = motor_right.throttle
+        #print(f"\rMotor Right Throttle: {motor_right.throttle}", end="")
     
     elif mode == PAWL_MODE:
         print("\rNow in PAWL mode", end="")
+        robot_data["Controller Mode"] = "Pawl Mode"
         #left joystick controls both motors to go forward/backwards
+
         speed = map_range(gizmo.axes.left_y, 0, 255, -1.0, 1.0)
+        robot_data["Speed"] = speed
+        #print(f"\rSpeed: {speed}", end="")
+        
         #right joystick horizontal axis controls the turning (basically slows down one motor to half speed while continuing the other motor at full speed)
         turn = map_range(gizmo.axes.right_x, 0, 255, -1.0, 1.0)
+        robot_data["Turn"] = 0.0
+        #print(f"\rTurn: {turn}", end="")
 
         # Calculate the throttle for each motor
         if turn > 0:  # Turning right
             motor_left.throttle = speed
             motor_right.throttle = speed * (1 - turn / 2)  # Slow down the right motor
+            robot_data["Motor Left Throttle"] = motor_left.throttle
         elif turn < 0:  # Turning left
             motor_left.throttle = speed * (1 + turn / 2)  # Slow down the left motor
             motor_right.throttle = speed
+            robot_data["Motor Right Throttle"] = motor_right.throttle
         else:  # No turning
             motor_left.throttle = speed
             motor_right.throttle = speed
+            robot_data["Motor Left Throttle"] = motor_left.throttle
         #A wee little side note here: I'm unable to find the technical term for this sort of controller layout, so I'm just going to call it "Pawl Mode" for now.
         #Was initially thinking of calling it "Better/Modern Arcade" because when I first heard of the term "Arcade Mode" 
         #I thought it was going to be like this (like regular video games), but it wasn't :(
@@ -161,15 +227,19 @@ while True:
     #Raise and lower arm motor
     if gizmo.buttons.left_trigger:
         print("Left trigger pressed")
+        robot_data["Left Trigger"] = True
         motor_task_raise_arm.motor.throttle = 1.0
     elif gizmo.buttons.left_shoulder:
         print("Left shoulder pressed")
         motor_task_raise_arm.motor.throttle = -1.0
+        robot_data["Left Shoulder"] = True
     #arm extension and retration motor
     if gizmo.buttons.y:
         motor_task_arm_extension_retraction.motor.throttle = 1.0
+        robot_data["Button Y"] = True
     elif gizmo.buttons.y:
         motor_task_arm_extension_retraction.motor.throttle = -1.0
+        robot_data["Button A"] = True
 
     #SERVOS CODE
     #Claw open and close servo
