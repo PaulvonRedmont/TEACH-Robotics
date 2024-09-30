@@ -10,7 +10,7 @@ button switches the robot to 'Pawl Mode'. The robot will start in 'Tank Mode'.
 
 Here are the controls for Tank Mode:
 Left Joystick Up/Down    - Motor 1 Fwd/Rev
-Right Joystick Up/Down   - Motor 3 Fwd/Rev
+Right Joystick Up/Down   - Motor 2 Fwd/Rev
 
 Here are the controls for Arcade Mode:
 Left Joystick Up/Down    - Robot Fwd/Rev
@@ -23,7 +23,7 @@ Left Joystick Left/Right  - Turn Left/Right
 
 
 These controls work in both modes:
-Right Trigger            - Motor 4 Forward
+Right Trigger            - Motor 3 Forward
 Right Shoulder Button    - Motor 4 Reverse
 Left Trigger             - Servo 1 to 0 degrees
 Left Shoulder Button     - Servo 1 to 90 degrees
@@ -54,7 +54,7 @@ motor_left = servo.ContinuousServo(
 )
 # Right Motor
 motor_right = servo.ContinuousServo(
-    pwmio.PWMOut(gizmo.MOTOR_3, frequency=pwm_freq),
+    pwmio.PWMOut(gizmo.MOTOR_2, frequency=pwm_freq),
     min_pulse=min_pulse,
     max_pulse=max_pulse
 )
@@ -63,7 +63,7 @@ motor_right = servo.ContinuousServo(
 #Motor arm stuff
 #raise arm
 motor_task_raise_arm = servo.ContinuousServo(
-    pwmio.PWMOut(gizmo.MOTOR_4, frequency=pwm_freq),
+    pwmio.PWMOut(gizmo.MOTOR_3, frequency=pwm_freq),
     min_pulse=min_pulse,
     max_pulse=max_pulse
 )
@@ -124,16 +124,19 @@ while True:
     prev_start_button = gizmo.buttons.start
 
     if mode == TANK_MODE:
+        print("Now in tank mode")
         motor_left.throttle = map_range(gizmo.axes.left_y, 0, 255, -1.0, 1.0)
         motor_right.throttle = map_range(gizmo.axes.right_y, 0, 255, -1.0, 1.0)
 
     elif mode == ARCADE_MODE:
+        print ("Now in arcade mode")
         speed = map_range(gizmo.axes.left_y, 0, 255, -1.0, 1.0)
         steering = map_range(gizmo.axes.left_x, 0, 255, -1.0, 1.0)
         motor_left.throttle = constrain(speed - steering, -1.0, 1.0)
         motor_right.throttle = constrain(speed + steering, -1.0, 1.0)
     
     elif mode == PAWL_MODE:
+        print("Now in pawl mode")
         #left joystick controls both motors to go forward/backwards
         speed = map_range(gizmo.axes.left_y, 0, 255, -1.0, 1.0)
         #right joystick horizontal axis controls the turning (basically slows down one motor to half speed while continuing the other motor at full speed)
@@ -155,20 +158,18 @@ while True:
         #But this controller layout is basically the same as popular games such a Fortnite, Minecraft, and Roblox, so it's a pretty modern controller layout and the standard in at least the shooter game industry
 
 
-
     #Raise and lower arm motor
     if gizmo.buttons.left_trigger:
+        print("Left trigger pressed")
         motor_task_raise_arm.motor.throttle = 1.0
     elif gizmo.buttons.left_shoulder:
+        print("Left shoulder pressed")
         motor_task_raise_arm.motor.throttle = -1.0
     #arm extension and retration motor
     if gizmo.buttons.y:
         motor_task_arm_extension_retraction.motor.throttle = 1.0
     elif gizmo.buttons.y:
         motor_task_arm_extension_retraction.motor.throttle = -1.0
-
-
-
 
     #SERVOS CODE
     #Claw open and close servo
